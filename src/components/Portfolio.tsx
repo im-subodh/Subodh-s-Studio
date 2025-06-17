@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -81,11 +81,17 @@ const Portfolio = () => {
   const ADMIN_PASSWORD = "Subodh@3223";
 
   const handlePasswordSubmit = () => {
+    console.log("Password submitted:", password);
+    console.log("Expected password:", ADMIN_PASSWORD);
+    console.log("Pending action:", pendingAction);
+    console.log("Selected item index:", selectedItemIndex);
+    
     if (password === ADMIN_PASSWORD) {
       setIsAuthenticated(true);
       setIsPasswordDialogOpen(false);
       setPassword("");
       
+      // Execute the pending action
       if (pendingAction === 'add') {
         setIsDialogOpen(true);
       } else if (pendingAction === 'edit' && selectedItemIndex !== null) {
@@ -96,8 +102,14 @@ const Portfolio = () => {
         handleDeleteItem(selectedItemIndex);
       }
       
+      // Reset pending action
       setPendingAction(null);
       setSelectedItemIndex(null);
+      
+      toast({
+        title: "Success",
+        description: "Authentication successful!",
+      });
     } else {
       toast({
         title: "Access Denied",
@@ -108,21 +120,11 @@ const Portfolio = () => {
   };
 
   const requestAccess = (action: 'add' | 'edit' | 'delete', itemIndex?: number) => {
-    if (isAuthenticated) {
-      if (action === 'add') {
-        setIsDialogOpen(true);
-      } else if (action === 'edit' && itemIndex !== undefined) {
-        const item = portfolioItems[itemIndex];
-        setNewItem(item);
-        setIsEditDialogOpen(true);
-      } else if (action === 'delete' && itemIndex !== undefined) {
-        handleDeleteItem(itemIndex);
-      }
-    } else {
-      setPendingAction(action);
-      setSelectedItemIndex(itemIndex ?? null);
-      setIsPasswordDialogOpen(true);
-    }
+    console.log("Requesting access for:", action, "at index:", itemIndex);
+    
+    setPendingAction(action);
+    setSelectedItemIndex(itemIndex ?? null);
+    setIsPasswordDialogOpen(true);
   };
 
   const handleAddItem = () => {
@@ -137,6 +139,7 @@ const Portfolio = () => {
         driveLink: ""
       });
       setIsDialogOpen(false);
+      setIsAuthenticated(false); // Reset authentication
       toast({
         title: "Success",
         description: "Portfolio item added successfully!",
@@ -159,6 +162,7 @@ const Portfolio = () => {
       });
       setIsEditDialogOpen(false);
       setSelectedItemIndex(null);
+      setIsAuthenticated(false); // Reset authentication
       toast({
         title: "Success",
         description: "Portfolio item updated successfully!",
@@ -167,8 +171,10 @@ const Portfolio = () => {
   };
 
   const handleDeleteItem = (index: number) => {
+    console.log("Deleting item at index:", index);
     const updatedItems = portfolioItems.filter((_, i) => i !== index);
     setPortfolioItems(updatedItems);
+    setIsAuthenticated(false); // Reset authentication
     toast({
       title: "Success",
       description: "Portfolio item deleted successfully!",
@@ -209,6 +215,9 @@ const Portfolio = () => {
                   <Lock className="h-5 w-5" />
                   Admin Access Required
                 </DialogTitle>
+                <DialogDescription>
+                  Enter the admin password to access portfolio management features.
+                </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
@@ -224,7 +233,12 @@ const Portfolio = () => {
                 </div>
               </div>
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsPasswordDialogOpen(false)}>
+                <Button variant="outline" onClick={() => {
+                  setIsPasswordDialogOpen(false);
+                  setPassword("");
+                  setPendingAction(null);
+                  setSelectedItemIndex(null);
+                }}>
                   Cancel
                 </Button>
                 <Button onClick={handlePasswordSubmit}>
@@ -239,6 +253,9 @@ const Portfolio = () => {
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>Add New Portfolio Item</DialogTitle>
+                <DialogDescription>
+                  Fill in the details to add a new portfolio item to your collection.
+                </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
@@ -315,6 +332,9 @@ const Portfolio = () => {
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>Edit Portfolio Item</DialogTitle>
+                <DialogDescription>
+                  Update the details of your portfolio item.
+                </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
@@ -409,10 +429,7 @@ const Portfolio = () => {
                     size="sm"
                     variant="outline"
                     className="bg-white/90 hover:bg-white"
-                    onClick={() => {
-                      setSelectedItemIndex(index);
-                      requestAccess('edit', index);
-                    }}
+                    onClick={() => requestAccess('edit', index)}
                   >
                     <Edit className="h-3 w-3" />
                   </Button>
@@ -422,7 +439,6 @@ const Portfolio = () => {
                         size="sm"
                         variant="outline"
                         className="bg-white/90 hover:bg-white text-red-600 hover:text-red-700"
-                        onClick={() => setSelectedItemIndex(index)}
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>
