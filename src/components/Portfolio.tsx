@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -6,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Plus, ExternalLink } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Plus, ExternalLink, Edit, Trash2, Lock } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Portfolio = () => {
   const [portfolioItems, setPortfolioItems] = useState([
@@ -61,6 +62,12 @@ const Portfolio = () => {
   ]);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'add' | 'edit' | 'delete' | null>(null);
+  const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
+  const [password, setPassword] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [newItem, setNewItem] = useState({
     type: "",
     title: "",
@@ -69,6 +76,54 @@ const Portfolio = () => {
     category: "",
     driveLink: ""
   });
+
+  const { toast } = useToast();
+  const ADMIN_PASSWORD = "Subodh@3223";
+
+  const handlePasswordSubmit = () => {
+    if (password === ADMIN_PASSWORD) {
+      setIsAuthenticated(true);
+      setIsPasswordDialogOpen(false);
+      setPassword("");
+      
+      if (pendingAction === 'add') {
+        setIsDialogOpen(true);
+      } else if (pendingAction === 'edit' && selectedItemIndex !== null) {
+        const item = portfolioItems[selectedItemIndex];
+        setNewItem(item);
+        setIsEditDialogOpen(true);
+      } else if (pendingAction === 'delete' && selectedItemIndex !== null) {
+        handleDeleteItem(selectedItemIndex);
+      }
+      
+      setPendingAction(null);
+      setSelectedItemIndex(null);
+    } else {
+      toast({
+        title: "Access Denied",
+        description: "Incorrect password. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const requestAccess = (action: 'add' | 'edit' | 'delete', itemIndex?: number) => {
+    if (isAuthenticated) {
+      if (action === 'add') {
+        setIsDialogOpen(true);
+      } else if (action === 'edit' && itemIndex !== undefined) {
+        const item = portfolioItems[itemIndex];
+        setNewItem(item);
+        setIsEditDialogOpen(true);
+      } else if (action === 'delete' && itemIndex !== undefined) {
+        handleDeleteItem(itemIndex);
+      }
+    } else {
+      setPendingAction(action);
+      setSelectedItemIndex(itemIndex ?? null);
+      setIsPasswordDialogOpen(true);
+    }
+  };
 
   const handleAddItem = () => {
     if (newItem.title && newItem.type && newItem.category) {
@@ -82,7 +137,42 @@ const Portfolio = () => {
         driveLink: ""
       });
       setIsDialogOpen(false);
+      toast({
+        title: "Success",
+        description: "Portfolio item added successfully!",
+      });
     }
+  };
+
+  const handleEditItem = () => {
+    if (selectedItemIndex !== null && newItem.title && newItem.type && newItem.category) {
+      const updatedItems = [...portfolioItems];
+      updatedItems[selectedItemIndex] = newItem;
+      setPortfolioItems(updatedItems);
+      setNewItem({
+        type: "",
+        title: "",
+        description: "",
+        thumbnail: "",
+        category: "",
+        driveLink: ""
+      });
+      setIsEditDialogOpen(false);
+      setSelectedItemIndex(null);
+      toast({
+        title: "Success",
+        description: "Portfolio item updated successfully!",
+      });
+    }
+  };
+
+  const handleDeleteItem = (index: number) => {
+    const updatedItems = portfolioItems.filter((_, i) => i !== index);
+    setPortfolioItems(updatedItems);
+    toast({
+      title: "Success",
+      description: "Portfolio item deleted successfully!",
+    });
   };
 
   const openDriveLink = (driveLink: string) => {
@@ -103,13 +193,49 @@ const Portfolio = () => {
             and social media content creation
           </p>
           
+          <Button 
+            onClick={() => requestAccess('add')}
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add New Post
+          </Button>
+
+          {/* Password Dialog */}
+          <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Lock className="h-5 w-5" />
+                  Admin Access Required
+                </DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter admin password"
+                    onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsPasswordDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handlePasswordSubmit}>
+                  Authenticate
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Add New Item Dialog */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white">
-                <Plus className="mr-2 h-4 w-4" />
-                Add New Post
-              </Button>
-            </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>Add New Portfolio Item</DialogTitle>
@@ -183,6 +309,82 @@ const Portfolio = () => {
               </div>
             </DialogContent>
           </Dialog>
+
+          {/* Edit Item Dialog */}
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Edit Portfolio Item</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-type">Type</Label>
+                  <Select value={newItem.type} onValueChange={(value) => setNewItem({...newItem, type: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Video">Video</SelectItem>
+                      <SelectItem value="Design">Design</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-title">Title</Label>
+                  <Input
+                    id="edit-title"
+                    value={newItem.title}
+                    onChange={(e) => setNewItem({...newItem, title: e.target.value})}
+                    placeholder="Enter project title"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-description">Description</Label>
+                  <Textarea
+                    id="edit-description"
+                    value={newItem.description}
+                    onChange={(e) => setNewItem({...newItem, description: e.target.value})}
+                    placeholder="Enter project description"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-category">Category</Label>
+                  <Input
+                    id="edit-category"
+                    value={newItem.category}
+                    onChange={(e) => setNewItem({...newItem, category: e.target.value})}
+                    placeholder="e.g. Video Editing, Graphic Design"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-thumbnail">Thumbnail URL</Label>
+                  <Input
+                    id="edit-thumbnail"
+                    value={newItem.thumbnail}
+                    onChange={(e) => setNewItem({...newItem, thumbnail: e.target.value})}
+                    placeholder="Enter image URL"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-driveLink">Google Drive Link (Optional)</Label>
+                  <Input
+                    id="edit-driveLink"
+                    value={newItem.driveLink}
+                    onChange={(e) => setNewItem({...newItem, driveLink: e.target.value})}
+                    placeholder="Enter Google Drive link"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleEditItem}>
+                  Update Item
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -201,6 +403,48 @@ const Portfolio = () => {
                   <span className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
                     {item.type}
                   </span>
+                </div>
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="bg-white/90 hover:bg-white"
+                    onClick={() => {
+                      setSelectedItemIndex(index);
+                      requestAccess('edit', index);
+                    }}
+                  >
+                    <Edit className="h-3 w-3" />
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="bg-white/90 hover:bg-white text-red-600 hover:text-red-700"
+                        onClick={() => setSelectedItemIndex(index)}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Portfolio Item</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete "{item.title}"? This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => requestAccess('delete', index)}
+                          className="bg-red-600 hover:bg-red-700"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                   <div className="flex gap-2">
