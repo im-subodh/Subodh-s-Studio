@@ -187,6 +187,20 @@ const Portfolio = () => {
     }
   };
 
+  const handleEditClick = (e: React.MouseEvent, index: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Edit button clicked for index:", index);
+    requestAccess('edit', index);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, index: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Delete button clicked for index:", index);
+    requestAccess('delete', index);
+  };
+
   return (
     <section id="portfolio" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -429,38 +443,18 @@ const Portfolio = () => {
                     size="sm"
                     variant="outline"
                     className="bg-white/90 hover:bg-white"
-                    onClick={() => requestAccess('edit', index)}
+                    onClick={(e) => handleEditClick(e, index)}
                   >
                     <Edit className="h-3 w-3" />
                   </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="bg-white/90 hover:bg-white text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Portfolio Item</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete "{item.title}"? This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => requestAccess('delete', index)}
-                          className="bg-red-600 hover:bg-red-700"
-                        >
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="bg-white/90 hover:bg-white text-red-600 hover:text-red-700"
+                    onClick={(e) => handleDeleteClick(e, index)}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                   <div className="flex gap-2">
