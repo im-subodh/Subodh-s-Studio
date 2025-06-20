@@ -2,6 +2,13 @@
 import { Button } from "@/components/ui/button";
 
 const Hero = () => {
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section id="home" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -24,6 +31,7 @@ const Hero = () => {
             <Button 
               size="lg" 
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-4 text-lg rounded-full transition-all duration-300 transform hover:scale-105"
+              onClick={() => scrollToSection('portfolio')}
             >
               View Portfolio
             </Button>
@@ -31,6 +39,7 @@ const Hero = () => {
               variant="outline" 
               size="lg"
               className="border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white px-8 py-4 text-lg rounded-full transition-all duration-300"
+              onClick={() => scrollToSection('contact')}
             >
               Get In Touch
             </Button>
