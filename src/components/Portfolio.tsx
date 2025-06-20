@@ -129,6 +129,7 @@ const Portfolio = () => {
   };
 
   const handleAddItem = () => {
+    console.log("Adding new item:", newItem);
     if (newItem.title && newItem.type && newItem.category) {
       setPortfolioItems([...portfolioItems, newItem]);
       setNewItem({
@@ -145,14 +146,25 @@ const Portfolio = () => {
         title: "Success",
         description: "Portfolio item added successfully!",
       });
+    } else {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields (Title, Type, Category).",
+        variant: "destructive",
+      });
     }
   };
 
   const handleEditItem = () => {
+    console.log("Editing item at index:", selectedItemIndex);
+    console.log("New item data:", newItem);
+    
     if (selectedItemIndex !== null && newItem.title && newItem.type && newItem.category) {
       const updatedItems = [...portfolioItems];
-      updatedItems[selectedItemIndex] = newItem;
+      updatedItems[selectedItemIndex] = { ...newItem };
       setPortfolioItems(updatedItems);
+      
+      // Reset form and close dialog
       setNewItem({
         type: "",
         title: "",
@@ -164,9 +176,22 @@ const Portfolio = () => {
       setIsEditDialogOpen(false);
       setSelectedItemIndex(null);
       setIsAuthenticated(false); // Reset authentication
+      
       toast({
         title: "Success",
         description: "Portfolio item updated successfully!",
+      });
+    } else {
+      console.log("Validation failed:", {
+        selectedItemIndex,
+        title: newItem.title,
+        type: newItem.type,
+        category: newItem.category
+      });
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields (Title, Type, Category).",
+        variant: "destructive",
       });
     }
   };
@@ -411,7 +436,18 @@ const Portfolio = () => {
                 </div>
               </div>
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                <Button variant="outline" onClick={() => {
+                  setIsEditDialogOpen(false);
+                  setNewItem({
+                    type: "",
+                    title: "",
+                    description: "",
+                    thumbnail: "",
+                    category: "",
+                    driveLink: ""
+                  });
+                  setSelectedItemIndex(null);
+                }}>
                   Cancel
                 </Button>
                 <Button onClick={handleEditItem}>
