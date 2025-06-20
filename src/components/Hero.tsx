@@ -38,11 +38,11 @@ const Hero = () => {
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto text-center">
             <div className="hover:scale-105 transition-transform duration-300">
-              <div className="text-3xl font-bold text-purple-600">500+</div>
+              <div className="text-3xl font-bold text-purple-600">50+</div>
               <div className="text-gray-600">Videos Edited</div>
             </div>
             <div className="hover:scale-105 transition-transform duration-300">
-              <div className="text-3xl font-bold text-blue-600">1000+</div>
+              <div className="text-3xl font-bold text-blue-600">100+</div>
               <div className="text-gray-600">Social Posts</div>
             </div>
             <div className="hover:scale-105 transition-transform duration-300">
@@ -50,7 +50,7 @@ const Hero = () => {
               <div className="text-gray-600">Happy Clients</div>
             </div>
             <div className="hover:scale-105 transition-transform duration-300">
-              <div className="text-3xl font-bold text-purple-600">3</div>
+              <div className="text-3xl font-bold text-purple-600">2</div>
               <div className="text-gray-600">Years Experience</div>
             </div>
           </div>

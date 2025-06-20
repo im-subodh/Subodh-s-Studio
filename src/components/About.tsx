@@ -9,14 +9,14 @@ const About = () => {
               About Me
             </h2>
             <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-              I'm a passionate creative professional specializing in video editing, graphic design, 
-              and social media content creation. With over 3 years of experience, I've helped brands 
-              and individuals tell their stories through compelling visual content.
+              I'm Subodh Singh — a creative Video Editor and Graphic Designer with a passion for visual storytelling. 
+              Skilled in CapCut, Canva, Premiere Pro, and After Effects, I craft clean edits, bold designs, 
+              and scroll-stopping social media content.
             </p>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-              From crafting engaging Instagram reels to creating stunning brand visuals, 
-              I combine technical expertise with creative vision to deliver content that 
-              not only looks amazing but drives real results.
+              My goal? To turn ideas into visuals that captivate and connect. Whether it's creating engaging 
+              content for brands or helping individuals tell their stories, I combine technical expertise 
+              with creative vision to deliver results that truly resonate.
             </p>
             
             <div className="grid grid-cols-2 gap-6">
@@ -49,7 +49,7 @@ const About = () => {
                 />
               </div>
               <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-xl">
-                3+ Years
+                2+ Years
               </div>
             </div>
           </div>
