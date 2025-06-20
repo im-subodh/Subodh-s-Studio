@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -438,24 +439,6 @@ const Portfolio = () => {
                     {item.type}
                   </span>
                 </div>
-                <div className="absolute top-4 right-4 flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="bg-white/90 hover:bg-white"
-                    onClick={(e) => handleEditClick(e, index)}
-                  >
-                    <Edit className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="bg-white/90 hover:bg-white text-red-600 hover:text-red-700"
-                    onClick={(e) => handleDeleteClick(e, index)}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                   <div className="flex gap-2">
                     <button className="bg-white/90 text-gray-900 px-6 py-2 rounded-full font-medium hover:bg-white transition-colors duration-200">
@@ -476,7 +459,27 @@ const Portfolio = () => {
               
               <div className="p-6">
                 <div className="text-sm text-purple-600 font-medium mb-2">{item.category}</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xl font-bold text-gray-900">{item.title}</h3>
+                  <div className="flex gap-1">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 w-8 p-0"
+                      onClick={(e) => handleEditClick(e, index)}
+                    >
+                      <Edit className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                      onClick={(e) => handleDeleteClick(e, index)}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
                 <p className="text-gray-600">{item.description}</p>
               </div>
             </div>
