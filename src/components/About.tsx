@@ -1,4 +1,3 @@
-
 const About = () => {
   return (
     <section id="about" className="py-20 bg-white">
@@ -8,15 +7,10 @@ const About = () => {
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               About Me
             </h2>
-            <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+            <p className="text-lg text-gray-600 mb-8 leading-relaxed">
               I'm Subodh Singh — a creative Video Editor and Graphic Designer with a passion for visual storytelling. 
               Skilled in CapCut, Canva, Premiere Pro, and After Effects, I craft clean edits, bold designs, 
               and scroll-stopping social media content.
-            </p>
-            <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-              My goal? To turn ideas into visuals that captivate and connect. Whether it's creating engaging 
-              content for brands or helping individuals tell their stories, I combine technical expertise 
-              with creative vision to deliver results that truly resonate.
             </p>
             
             <div className="grid grid-cols-2 gap-6">
